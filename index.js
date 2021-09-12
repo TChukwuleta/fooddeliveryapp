@@ -4,15 +4,7 @@ const adminRoute = require('./routes/Admin/adminRoutes')
 const app = express()
 const mongoose = require('mongoose')
 
-
-// mongoose.connect(`${process.env.START_MONGODB}${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}${process.env.END_MONGODB}`, { useNewUrlParser: true, useUnifiedTopology: true })
-// .then(() => {
-//     console.log('Nanana')
-// })
-// .catch((e) => {
-//     console.log(e)
-// })
-mongoose.connect('mongodb+srv://TChukwuleta:Iamgreat97@cluster1.ejith.mongodb.net/myFoodDelivery?retryWrites=true&w=majority', { useNewUrlParser: true })
+mongoose.connect(`${process.env.MONGO_URL}`, { useNewUrlParser: true })
 .then(() => {
     console.log('Leggo')
 })
