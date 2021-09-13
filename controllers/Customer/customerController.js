@@ -8,7 +8,9 @@ const jwt = require('jsonwebtoken')
 const registerSchema = Joi.object({
     name: Joi.string().required(), 
     email: Joi.string().email().required(),
-    password: Joi.string().required().min(8)
+    password: Joi.string().required().min(8),
+    phone: Joi.number(),
+    items: Joi.array().items(Joi.string())
 })
 
 // Validation schema for the login
@@ -99,7 +101,7 @@ const addItems = async (req, res) => {
                 category,
                 readyTime,
                 price,
-                images: ['mock.jpg'],
+                // images: ['mock.jpg'],
                 rating: 0
             })
             customer.items.push(createCatalog)

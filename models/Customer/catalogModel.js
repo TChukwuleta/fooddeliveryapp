@@ -33,6 +33,6 @@ const catalogSchema = new schema({
     timestamps: true
 })
 
-const Catalog = mongoose.model('item', catalogSchema)
+const Catalog = mongoose.model('Catalog', catalogSchema)
 
 module.exports = Catalog

@@ -17,10 +17,10 @@ const profileSchema = new schema({
     phone: {
         type: Number
     },
-    items: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Catalog"
-    }
+    items: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Catalog'
+    }]
 })
 
 const Profile = mongoose.model('customerProfile', profileSchema)
