@@ -18,7 +18,7 @@ const profileSchema = new schema({
         type: Number
     },
     items: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Catalog'
     }]
 })

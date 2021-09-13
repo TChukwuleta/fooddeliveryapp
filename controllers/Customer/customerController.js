@@ -50,7 +50,7 @@ const registerCustomer = async (req, res) => {
         items: []
     })
 
-    return res.status(201).json({ newCustomer })  
+    return res.status(201).send( newCustomer )  
 }
 
 // Customer login feature
@@ -82,7 +82,21 @@ const getCustomerProfile = async (req, res) => {
 }
 
 // Customer can update their profile
-const updateCustomerProfile = (req, res) => {}
+const updateCustomerProfile = async (req, res) => {
+    try{
+        const user = await Profile.updateOne({ email: req.body.email}, {$set: {
+            name: req.body.name,
+            password: req.body.password,
+            phone: req.body.phone
+        }}, { new: true })
+        console.log(user)
+        res.send(user)
+    }
+    catch(e){
+        console.log(e)
+        res.send(e)
+    }
+}
 
 
 // PRODUCT CATALOG
@@ -101,7 +115,7 @@ const addItems = async (req, res) => {
                 category,
                 readyTime,
                 price,
-                // images: ['mock.jpg'],
+                images: ['mock.jpg'],
                 rating: 0
             })
             customer.items.push(createCatalog)

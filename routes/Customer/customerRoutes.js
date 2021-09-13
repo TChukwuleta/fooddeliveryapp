@@ -19,4 +19,7 @@ router.get('/catalog', validateAuth, customerController.getCatalog)
 
 router.post('/items', validateAuth, customerController.addItems)
 
+
+
+
 module.exports = router  
