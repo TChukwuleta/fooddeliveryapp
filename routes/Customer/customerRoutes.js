@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/register', customerController.registerCustomer)
-
+ 
 router.post('/login', customerController.loginCustomer)
 
 router.get('/profile', validateAuth, customerController.getCustomerProfile)

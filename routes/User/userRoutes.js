@@ -6,6 +6,7 @@ const { validateAuth } = require('../../middlewares/auth')
 router.get('/', (req, res) => {
     res.send('This is the home page oo')
 })
+router.get('/test', validateAuth, customerController.testRoute)
 
 // PROFILE
 
@@ -16,16 +17,9 @@ router.post('/register', customerController.registerCustomer)
 router.post('/login', customerController.loginCustomer)
 
 
-//Authentication
-// Verify user account
-router.patch('/verify', customerController.verifyCustomer)
-
-// OTP / Requesting OTP
-router.get('/otp', customerController.requestOTP)
-
 // Profile
 router.get('/profile', validateAuth, customerController.getCustomerProfile)
-router.put('/update', customerController.updateCustomerProfile)
+router.put('/update', validateAuth, customerController.updateCustomerProfile)
 
 
 module.exports = router  

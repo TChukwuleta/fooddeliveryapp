@@ -5,14 +5,15 @@ dotenv.config();
 const validateAuth = (req, res, next) => {
     const token = req.get('Authorization')
     if(token){
-        jwt.verify(token.split(' ')[1], `${process.env.jkeys}`, async (err, decoded) => {
+        // jwt.verify(token.split(' ')[1], `${process.env.jkeys}`, async (err, decoded) => {
+            jwt.verify(token.split(' ')[1], `${process.env.jkeys}`, async (err, decoded) => {
             if(err){
                 // console.log(err.message)
                 // res.redirect('/')
                 return false  
             }
             else {
-                console.log(decoded)
+                // console.log(decoded)
                 req.user = decoded
                 next()
             }

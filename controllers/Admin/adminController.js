@@ -79,7 +79,7 @@ const createProduct = async (req, res) => {
     })
     console.log(newProduct)
     return res.status(201).json({ newProduct })
-}
+} 
 
 const getProduct = async (req, res) => {
     const productId = req.params.id

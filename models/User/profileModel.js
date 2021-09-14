@@ -24,24 +24,6 @@ const userSchema = new schema({
     },
     address: {
         type: String
-    },
-    verified: {
-        type: Boolean,
-        required: true
-    },
-    otp: {
-        type: Number,
-        required: true
-    },
-    otp_expiry: {
-        type: Date,
-        required: true
-    },
-    lat: {
-        type: Number
-    },
-    lng: {
-        type: Number
     }
 }, {
     timestamps: true
