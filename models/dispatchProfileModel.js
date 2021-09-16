@@ -13,14 +13,14 @@ const profileSchema = new schema({
         type: String,
         required: true
     },
-    password: {
+    password: { 
         type: String,
         required: true
     },
     phone: {
         type: Number
     },
-    serviceAvailable: {
+    serviceAvailable: { 
         type: Boolean,
         default: false
     },
@@ -30,6 +30,6 @@ const profileSchema = new schema({
     }
 })
 
-const dispatchProfile = mongoose.model('dispatchProfile', profileSchema)
+const dispatchProfile = mongoose.model('dispatchprofile', profileSchema)
 module.exports = dispatchProfile
  

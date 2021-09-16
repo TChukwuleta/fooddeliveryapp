@@ -5,7 +5,7 @@ const { validateAuth } = require('../../middlewares/auth')
 
 router.get('/', (req, res) => {
     res.send('This is the home page oo')
-})
+}) 
 
 router.post('/register', customerController.registerCustomer)
  
@@ -21,5 +21,5 @@ router.post('/items', validateAuth, customerController.addItems)
 
 
 
-
+ 
 module.exports = router  

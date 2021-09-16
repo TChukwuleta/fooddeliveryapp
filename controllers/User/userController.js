@@ -2,6 +2,8 @@ const Joi = require('joi')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const userProfile = require('../../models/User/profileModel')
+const Product = require('../../models/productCatalogModel')
+const Order = require('../../models/User/orderModel')
 
 // Validation schema for the registration
 const registerSchema = Joi.object({
@@ -11,7 +13,7 @@ const registerSchema = Joi.object({
     password: Joi.string().required().min(8),
     phone: Joi.number().required(),
     address: Joi.string()
-})
+}) 
 
 // Validation schema for the login
 const loginSchema = Joi.object({
@@ -46,7 +48,8 @@ const registerCustomer = async (req, res) => {
         email: req.body.email,
         password: hashPassword,
         phone: req.body.phone,
-        address: req.body.address
+        address: req.body.address,
+        orders: []
     })
      
     return res.status(201).json({ message: "User created successfully" })
@@ -112,11 +115,67 @@ const updateCustomerProfile = async (req, res) => {
     return res.status(400).json({ message: "Error with updating user" })
 }
 
+// Order
+const createOrder = async (req, res) => {
+    // Get current login customer
+    const user = req.user
+    if(user){
+        // Create an order ID
+        const orderId = `${Math.floor(Math.random() * 89999) + 1000}`
+        const customer = await userProfile.findById(user._id)
+        // res.send(customer)
+
+        // Grab order items from request
+        const cart = req.body
+        let cartItems = Array()
+        let netAmount = 0.0
+
+        // Calculate order amount
+        const products = await Product.find().where('_id').in(cart.map(item => item._id)).exec()
+        products.map(product => {
+            cart.map(({ _id, unit }) => {
+                if(product._id == _id){
+                    netAmount += (product.price * unit)
+                    cartItems.push({ product, unit })
+                }
+            })
+        })
+        // Create order with item description
+        if(cartItems){
+            const currentOrder = await Order.create({
+                orderId: orderId,
+                items: cartItems,
+                totalAmount: netAmount,
+                orderDate: new Date(),
+                paidThtough: "COD",
+                PaymentResponse: '',
+                orderStatus: 'Waiting'
+                
+            })
+            if(currentOrder){
+                customer.orders.push(currentOrder)
+                const profileResponse = await customer.save()
+                return res.status(200).json(profileResponse)
+            }
+        }
+    }
+    
+    return res.status(400).json({ message: "Error with creating orders"})
+}
+
+const getOrders = (req, res) => {}
+
+const getOrderById = (req, res) => {}
 
 // CART
-// Order
+const getCart = async(req, res) => {}
+
+const addToCart = async(req, res) => {}
+
+const deleteCart = async(req, res) => {}
 
 // Payment
+
 
 
 const testRoute = async(req, res) => {
@@ -130,5 +189,11 @@ module.exports = {
     loginCustomer,
     getCustomerProfile,
     updateCustomerProfile,
+    getCart,
+    addToCart,
+    deleteCart,
+    createOrder,
+    getOrders,
+    getOrderById,
     testRoute
 }

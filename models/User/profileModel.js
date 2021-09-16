@@ -10,7 +10,7 @@ const userSchema = new schema({
         type: String,
         required: true
     },
-    email: {
+    email: { 
         type: String,
         required: true
     },
@@ -24,7 +24,11 @@ const userSchema = new schema({
     },
     address: {
         type: String
-    }
+    },
+    orders: [{
+        type: schema.Types.ObjectId,
+        ref: 'order'
+    }]
 }, {
     timestamps: true
 })

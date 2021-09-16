@@ -10,7 +10,7 @@ const mongoose = require('mongoose')
 // .then(() => {
 //     console.log('Leggo')
 // })
-// .catch((e) => {
+// .catch((e) => { 
 //     console.log(e)
 // })
 const uri = 'mongodb://localhost/fooddeliverytest'

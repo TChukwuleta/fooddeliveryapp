@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
 const catalogSchema = new schema({
-    itemId: {
-        type: String
+    itemNo: {
+        type: Number
     },
     name: {
         type: String,
@@ -16,13 +16,13 @@ const catalogSchema = new schema({
     category: {
         type: String
     },
-    images: {
-        type: [String]
+    deliveryTime: {
+        type: Date
     },
-    readyTime: {
+    items: {
         type: Number
     },
-    price: {
+    price: { 
         type: Number,
         required: true
     },
@@ -33,6 +33,6 @@ const catalogSchema = new schema({
     timestamps: true
 })
 
-const Catalog = mongoose.model('Catalog', catalogSchema)
+const productCatalog = mongoose.model('productcatalog', catalogSchema)
 
-module.exports = Catalog
+module.exports = productCatalog

@@ -1,6 +1,7 @@
 const express = require('express')
 const adminController = require('../../controllers/Admin/adminController')
 const router = express.Router()
+const { validateAuth } = require('../../middlewares/auth')
 
 router.get('/', (req, res) => {
     res.send('This is an admin')
@@ -9,19 +10,19 @@ router.get('/', (req, res) => {
 // CREATE ADMIN PROFILE 
 router.post('/register', adminController.registerAdmin)
 
-router.get('/login', adminController.loginAdmin)
+router.post('/login', adminController.loginAdmin)
+ 
 
+// CONTENT MANAGEMENT  
 
-// CONTENT MANAGEMENT 
-
-router.post('/product-create', adminController.createProduct)
+router.post('/product-create', validateAuth, adminController.createProduct)
 
 router.get('/products', adminController.getProducts)
 
 router.get('/product/:id', adminController.getProduct)
 
-router.put('/product-update', adminController.updateProduct)
+router.put('/product-update/:id', validateAuth, adminController.updateProduct)
 
-router.post('/product-delete/:id', adminController.deleteProduct)
+router.post('/product-delete/:id', validateAuth, adminController.deleteProduct)
 
-module.exports = router
+module.exports = router  

@@ -8,18 +8,24 @@ router.get('/', (req, res) => {
 })
 router.get('/test', validateAuth, customerController.testRoute)
 
-// PROFILE
+// The User
 
 // Sign Up
 router.post('/register', customerController.registerCustomer)
-
 // Login
 router.post('/login', customerController.loginCustomer)
-
-
 // Profile
 router.get('/profile', validateAuth, customerController.getCustomerProfile)
 router.put('/update', validateAuth, customerController.updateCustomerProfile)
+ 
+// Orders
+router.post('/create-order', validateAuth, customerController.createOrder)
+router.get('/orders', customerController.getOrders)
+router.get('/order/:id', customerController.getOrderById)
 
+// Cart
+router.get('/cart', customerController.getCart)
+router.post('/cart', customerController.addToCart)
+router.delete('/cart', customerController.deleteCart)
 
 module.exports = router  

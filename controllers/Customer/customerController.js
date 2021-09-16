@@ -1,5 +1,5 @@
 const Profile = require('../../models/Customer/profileModel')
-const Catalog = require('../../models/Customer/catalogModel')
+const Catalog = require('../../models/productCatalogModel')
 const Joi = require('joi')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -94,7 +94,7 @@ const updateCustomerProfile = async (req, res) => {
     }
     catch(e){
         console.log(e)
-        res.send(e)
+        res.send(e) 
     }
 }
 
@@ -115,7 +115,6 @@ const addItems = async (req, res) => {
                 category,
                 readyTime,
                 price,
-                images: ['mock.jpg'],
                 rating: 0
             })
             customer.items.push(createCatalog)

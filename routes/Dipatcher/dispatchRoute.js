@@ -4,9 +4,9 @@ const dispatchController = require('../../controllers/Dispatcher/dispatcherContr
 const router = express.Router()
 
 // PROFILES
-router.post('/register', dispatchController.register)
+router.post('/register', validateAuth, dispatchController.registerRider)
 
-router.post('/login', dispatchController.login)
+router.post('/login', dispatchController.loginRider)
 
 router.get('/profile', validateAuth, dispatchController.getdispatcherProfile)
 
