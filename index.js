@@ -27,7 +27,7 @@ app.use(express.json())
  
 app.use('/customer', customerRoute)
 app.use('/admin', adminRoute)
-app.use('/dispatch', dispathRoute)
+app.use('/rider', dispathRoute)
 app.use('/user', userRoute)
 
 const port = 1001

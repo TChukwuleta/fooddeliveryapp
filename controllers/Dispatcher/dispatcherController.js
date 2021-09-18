@@ -8,7 +8,6 @@ const adminProfile = require('../../models/adminProfileModel')
 // Register Validation schema
 const registerSchema = Joi.object({
     name: Joi.string().required(), 
-    dCode: Joi.string(),
     email: Joi.string().email().required(),
     password: Joi.string().required().min(8),
     phone: Joi.string().required()
@@ -31,8 +30,9 @@ const createToken = async (payload) => {
 // Create rider's account
 const registerRider = async (req, res) => {
     const user = req.user
-    if (user){
+    if(user){
         const admin = await adminProfile.findById(user._id)
+        console.log(admin)
         if(admin){
             const { error } = registerSchema.validate(req.body)
             if (error) {
@@ -42,12 +42,13 @@ const registerRider = async (req, res) => {
             if (riderExist){
                 return res.status(400).json({ "message": "A Rider with this email already exist" })
             }
-            
+
             const salt = await bcrypt.genSalt(10)
             const hashPassword = await bcrypt.hash(req.body.password, salt)
+            const genId = Math.floor((Math.random() * 1000000) + 1)
             const newRider = await dispatchProfile.create({
                 name: req.body.name,
-                dCode: req.body.dCode,
+                dCode: genId,
                 email: req.body.email,
                 password: hashPassword,
                 phone: req.body.phone,
@@ -57,9 +58,9 @@ const registerRider = async (req, res) => {
             console.log(newRider)
             admin.couriersId.push(newRider)
             const result = admin.save()
-            return res.json(result) 
+            return res.json(result)
         }
-    }
+    } 
 }
  
 // Login into rider's accouunt
@@ -89,7 +90,9 @@ const dispatchAvailability = async (req, res) => {
     const result = await dispatchProfile.find({ dCode: pinCode })
  
     if(result){ 
-        const Moving = dispatchProfile.serviceAvailable
+        dispatchProfile.serviceAvailable = true
+        const toggler =  dispatchProfile.save()
+        return res.status(200).json(toggler)
     }
     else{
         res.status(400).json({ "message": "Rider not found" })

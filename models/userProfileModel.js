@@ -25,10 +25,16 @@ const userSchema = new schema({
     address: {
         type: String
     },
+    lat: {
+        type: Number
+    },
+    long: {
+        type: Number
+    },
     orders: [{
         type: schema.Types.ObjectId,
         ref: 'order'
-    }]
+    }] 
 }, {
     timestamps: true
 })

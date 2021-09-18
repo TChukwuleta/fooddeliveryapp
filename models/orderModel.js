@@ -5,15 +5,11 @@ const orderSchema = new schema({
     orderId: {
         type: String
     },
-    name: {
-        type: String,
-        required: true
-    },
     items: [{
-        food: {
+        item: {
             type: schema.Types.ObjectId,
-            ref: 'usercatalog',
-            required: true
+            ref: 'productcatalog',
+            // required: true
         },
         unit: {
             type: Number,
@@ -21,7 +17,7 @@ const orderSchema = new schema({
         }
     }],
     totalAmount: {
-        type: String,
+        type: Number,
         required: true
     },
     orderDate: {
@@ -31,8 +27,7 @@ const orderSchema = new schema({
         type: String
     },
     PaymentResponse: {
-        type: String,
-        required: true
+        type: String 
     },
     orderStatus: {
         type: String

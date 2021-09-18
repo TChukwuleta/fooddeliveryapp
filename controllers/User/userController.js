@@ -1,9 +1,9 @@
 const Joi = require('joi')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const userProfile = require('../../models/User/profileModel')
+const userProfile = require('../../models/userProfileModel')
 const Product = require('../../models/productCatalogModel')
-const Order = require('../../models/User/orderModel')
+const Order = require('../../models/orderModel')
 
 // Validation schema for the registration
 const registerSchema = Joi.object({
@@ -28,7 +28,7 @@ const createToken = async (payload) => {
     })
 } 
 
-// PROFILE
+// PROFILE 
 // Sign Up
 const registerCustomer = async (req, res) => {
     const { error } = registerSchema.validate(req.body)
@@ -46,10 +46,12 @@ const registerCustomer = async (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
-        password: hashPassword,
+        password: hashPassword, 
         phone: req.body.phone,
         address: req.body.address,
-        orders: []
+        orders: [],
+        lat: 0,
+        long: 0
     })
      
     return res.status(201).json({ message: "User created successfully" })
@@ -85,7 +87,7 @@ const getCustomerProfile = async (req, res) => {
     if(user){
         const profile = await userProfile.findById(user._id)
         if(profile){
-            res.status(200).json(profile)
+            return res.status(200).json(profile)
         }
         else{
             return res.status(400).json({ message: "Cant match a profile with the user" })
@@ -94,6 +96,7 @@ const getCustomerProfile = async (req, res) => {
     return res.status(400).json({ message: "Error with fetching user profile" })
 }
 
+// Update customer information
 const updateCustomerProfile = async (req, res) => {
     const {firstName, lastName, password, phone, address } = req.body
     const user = req.user
@@ -127,11 +130,11 @@ const createOrder = async (req, res) => {
 
         // Grab order items from request
         const cart = req.body
-        let cartItems = Array()
+        let cartItems = []
         let netAmount = 0.0
 
         // Calculate order amount
-        const products = await Product.find().where('_id').in(cart.map(item => item._id)).exec()
+        const products = await Product.find().where('_id').in(cart.map(itemss => itemss._id)).exec()
         products.map(product => {
             cart.map(({ _id, unit }) => {
                 if(product._id == _id){
@@ -155,7 +158,7 @@ const createOrder = async (req, res) => {
             if(currentOrder){
                 customer.orders.push(currentOrder)
                 const profileResponse = await customer.save()
-                return res.status(200).json(profileResponse)
+                return res.status(200).json(currentOrder)
             }
         }
     }
@@ -163,9 +166,23 @@ const createOrder = async (req, res) => {
     return res.status(400).json({ message: "Error with creating orders"})
 }
 
-const getOrders = (req, res) => {}
+const getOrders = async (req, res) => {
+    const user = req.user
+    if(user){
+        const profile = await userProfile.findById(user._id).populate("orders")
+        if(profile){
+            return res.status(200).json(profile.orders)
+        }
+    }
+}
 
-const getOrderById = (req, res) => {}
+const getOrderById = async (req, res) => {
+    const orderId = req.params.id
+    if(orderId){
+        const order = await Order.findById(orderId).populate("items.item")
+        res.status(200).json(order)
+    }
+}
 
 // CART
 const getCart = async(req, res) => {}
