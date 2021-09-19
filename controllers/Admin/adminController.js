@@ -1,5 +1,6 @@
 const Product = require('../../models/productCatalogModel')
 const adminProfile = require('../../models/adminProfileModel')
+const Order = require('../../models/orderModel')
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -164,6 +165,60 @@ const updateProduct = async (req, res) => {
 const deleteProduct = (req, res) => {}
 
 
+// Orders
+const getOrders = async (req, res) => {
+    const admin = req.user
+    if(admin){
+        const orders = await Order.find({ adminId: user._id}).populate('items.item')
+        if(orders){
+            return res.status(200).json(orders)
+        }
+    }
+    return res.json({ message: "Order not found" })
+}
+
+const getOrderDetail = async (req, res) => {
+    const orderId = req.params.id
+    if(orderId){
+        const order = await Order.findById(orderId).populate('items.item')
+        if(order){
+            return res.status(200).json(order)
+        }
+    }
+    return res.json({ message: "Order not found" })
+}
+
+const processOrder = async (req, res) => {
+    const orderId = req.params.id
+    // Status => Accept, Waiting, Reject, Under-process, Ready, failed
+    const { status, remarks, time } = req.body
+    if(orderId){
+        const order = await Order.findById(orderId).populate('items.item')
+        order.orderStatus = status
+        order.remarks = remarks
+        if(time){
+            order.readyTimeFrame = time
+        }
+        const orderResult = await order.save()
+        if(orderResult){
+            return res.status(200).json(orderResult)
+        }
+    }
+    return res.json({ message: "Unable to process Order" })
+}
+
+// Discounts
+const getDiscounts = async (req, res) => {}
+
+const updateDiscount = async (req, res) => {
+    const user = req.user
+    if(user){
+        const {} = req.body
+    }
+}
+
+const createDiscount = async (req, res) => {}
+
 module.exports = {
     createProduct,
     getProduct,
@@ -171,5 +226,11 @@ module.exports = {
     updateProduct,
     deleteProduct,
     registerAdmin,
-    loginAdmin
+    loginAdmin,
+    getOrderDetail,
+    getOrders,
+    processOrder,
+    getDiscounts,
+    updateDiscount,
+    createDiscount
 }

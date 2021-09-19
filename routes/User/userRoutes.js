@@ -25,7 +25,8 @@ router.get('/order/:id', customerController.getOrderById)
 
 // Cart
 router.get('/cart', customerController.getCart)
-router.post('/cart', customerController.addToCart)
+// router.post('/cart', validateAuth, customerController.addToCart)
+router.post('/cart', validateAuth, customerController.testRoute)
 router.delete('/cart', customerController.deleteCart)
 
 module.exports = router     

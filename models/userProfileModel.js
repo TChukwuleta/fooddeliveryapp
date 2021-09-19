@@ -31,6 +31,17 @@ const userSchema = new schema({
     long: {
         type: Number
     },
+    cart: [{
+        product: {
+            type: schema.Types.ObjectId,
+            ref: 'productcatalog',
+            require: true
+        },
+        unit: {
+            type: Number,
+            require: true
+        }
+    }],
     orders: [{
         type: schema.Types.ObjectId,
         ref: 'order'

@@ -9,20 +9,24 @@ router.get('/', (req, res) => {
 
 // CREATE ADMIN PROFILE 
 router.post('/register', adminController.registerAdmin)
-
 router.post('/login', adminController.loginAdmin)
  
 
 // CONTENT MANAGEMENT  
-
 router.post('/product-create', validateAuth, adminController.createProduct)
-
 router.get('/products', adminController.getProducts)
-
 router.get('/product/:id', adminController.getProduct)
-
 router.put('/product-update/:id', validateAuth, adminController.updateProduct)
-
 router.post('/product-delete/:id', validateAuth, adminController.deleteProduct)
+
+// Orders
+router.get('/orders', adminController.getOrders)
+router.put('/order/:id/process', adminController.processOrder)
+router.get('/order/:id', adminController.getOrderDetail)
+
+// Discounts
+router.get('/discounts', adminController.getDiscounts)
+router.post('/discount', adminController.createDiscount)
+router.put('/discount/:id', adminController.updateDiscount)
 
 module.exports = router  

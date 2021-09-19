@@ -5,11 +5,15 @@ const orderSchema = new schema({
     orderId: {
         type: String
     },
+    adminId: {
+        type: String,
+        require: true
+    },
     items: [{
         item: {
             type: schema.Types.ObjectId,
             ref: 'productcatalog',
-            // required: true
+            require: true
         },
         unit: {
             type: Number,
@@ -31,6 +35,21 @@ const orderSchema = new schema({
     },
     orderStatus: {
         type: String
+    },
+    remarks: {
+        type: String
+    },
+    deliveryId: {
+        type: String
+    },
+    appliedDiscount: {
+        type: Boolean
+    },
+    discountId: {
+        type: String
+    },
+    readyTimeFrame: {
+        type: Number
     }
 }, {
     timestamps: true
