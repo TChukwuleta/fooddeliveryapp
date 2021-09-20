@@ -3,7 +3,8 @@ const schema = mongoose.Schema
 
 const orderSchema = new schema({
     orderId: {
-        type: String
+        type: String,
+        required: true
     },
     adminId: {
         type: String,
@@ -12,8 +13,7 @@ const orderSchema = new schema({
     items: [{
         item: {
             type: schema.Types.ObjectId,
-            ref: 'productcatalog',
-            require: true
+            ref: 'productcatalog'
         },
         unit: {
             type: Number,
@@ -33,7 +33,7 @@ const orderSchema = new schema({
     PaymentResponse: {
         type: String 
     },
-    orderStatus: {
+    orderStatus: { 
         type: String
     },
     remarks: {

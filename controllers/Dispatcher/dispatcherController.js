@@ -62,7 +62,7 @@ const registerRider = async (req, res) => {
         }
     } 
 }
- 
+  
 // Login into rider's accouunt
 const loginRider = async (req, res) => {
     const { error } = loginSchema.validate(req.body)
@@ -92,28 +92,36 @@ const dispatchAvailability = async (req, res) => {
     if(result){ 
         dispatchProfile.serviceAvailable = true
         const toggler =  dispatchProfile.save()
-        return res.status(200).json(toggler)
+        return res.status(200).json(toggler) 
     }
     else{
         res.status(400).json({ "message": "Rider not found" })
     }
 }
 
-const register = (req, res) => {}
- 
-const login = (req, res) => {}
+const getdispatcherProfile = async (req, res) => {}
 
-const getdispatcherProfile = (req, res) => {}
+const updateDispatchProfile = async (req, res) => {
+    const pincode = req.params.pincode
+    const rider = await dispatchProfile.find({ dCode: pincode })
+    if(rider){
+        rider.name = req.body.name,
+        rider.email = req.body.email,
+        rider.password = req.body.password,
+        rider.phone = req.body.phone
 
-const updateDispatchProfile = (req, res) => {}
+        const savedResult = await rider.save()
+        return res.status(201).json(savedResult) 
+    }
+    return res.status(400).json({ message: "Cannot get Rider" }) 
+}
+
 
 
 module.exports = {
     registerRider,
     loginRider,
     dispatchAvailability,
-    register,
-    login,
     getdispatcherProfile,
     updateDispatchProfile
 }

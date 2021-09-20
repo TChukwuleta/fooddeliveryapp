@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
-const profileSchema = new schema({
+const profileSchema = new schema({  
     name: {
         type: String
     },
@@ -17,7 +17,7 @@ const profileSchema = new schema({
     couriersId: [{
         type: schema.Types.ObjectId,
         ref: 'dispatchprofile'
-    }],
+    }],   
     products: [{  
         type: schema.Types.ObjectId,
         ref: 'productcatalog'

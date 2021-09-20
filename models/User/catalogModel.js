@@ -16,7 +16,7 @@ const catalogSchema = new schema({
     category: {
         type: String
     },
-    images: {
+    images: { 
         type: [String]
     },
     readyTime: {

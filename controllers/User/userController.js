@@ -1,11 +1,13 @@
 const Joi = require('joi')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Discount = require('../../models/discountModel')
 const userProfile = require('../../models/userProfileModel')
 const Product = require('../../models/productCatalogModel')
 const Order = require('../../models/orderModel')
+const Transaction = require('../../models/transactionModel')
 
-// Validation schema for the registration
+// Validation schema for the registration      
 const registerSchema = Joi.object({
     firstName: Joi.string().required(), 
     lastName: Joi.string().required(), 
@@ -78,7 +80,7 @@ const loginCustomer = async (req, res) => {
     return res.status(201).json({ signature: signature }) 
 }
 
-
+ 
 
 // Profile
 const getCustomerProfile = async (req, res) => {
@@ -117,10 +119,9 @@ const updateCustomerProfile = async (req, res) => {
     }
     return res.status(400).json({ message: "Error with updating user" })
 }
-
+  
 // Order
 const createOrder = async (req, res) => {
-    // Get current login customer
     const user = req.user
     if(user){
         // Create an order ID
@@ -150,7 +151,7 @@ const createOrder = async (req, res) => {
                 items: cartItems,
                 totalAmount: netAmount,
                 orderDate: new Date(),
-                paidThtough: "COD",
+                paidThtough: "POS",
                 PaymentResponse: '',
                 orderStatus: 'Waiting'
                 
@@ -158,7 +159,8 @@ const createOrder = async (req, res) => {
             if(currentOrder){
                 customer.orders.push(currentOrder)
                 const profileResponse = await customer.save()
-                return res.status(200).json(currentOrder)
+                console.log(currentOrder)
+                return res.status(200).json(profileResponse.orders)
             }
         }
     }
@@ -251,8 +253,60 @@ const deleteCart = async(req, res) => {
     return res.status(400).json({ message: "Cart is already empty" })
 }
 
-// Payment
+// Discount
+const getAvailableDiscount = async (req, res) => {
+    const pincode = req.params.pincode
+    const discounts = await Discount.find({ pincode, isActive: true })
+    if(discounts){
+        return res.status(200).json(discounts)
+    }
+    return res.status(400).json({ message: "Discount not found" })
+}
 
+const verifyDiscount = async (req, res) => {
+    const offerId = req.params.id
+    const user = req.user
+    if(user){
+        const appliedDiscount = await Discount.findById(offerId)
+        if(appliedDiscount){
+            if(appliedDiscount.isActive){
+                return res.status(200).json({ message: "Discount is valid", discount: appliedDiscount })
+            }
+        }
+    }
+    return res.status(400).json({ message: "Discount is not valid" })
+}
+
+
+
+// Payment
+const createPayment = async (req, res) => {
+    const user = req.user
+    const { amount, paymentMode, discountId } = req.body 
+    let payableAmount = Number(amount)
+    if(discountId){
+        const appliedDiscount = await Discount.findById(discountId)
+        if (appliedDiscount){
+            if(appliedDiscount.isActive){
+                payableAmount = (payableAmount - appliedDiscount.discountAmount)
+            }
+        }
+    }
+    // Perform payment gateway charge API call
+    
+    // Create record on transaction
+    const transaction = await Transaction.create({
+        customer: user._id,
+        adminId: '',
+        orderId: '',
+        orderValue: payableAmount,
+        discountUsed: discountId || 'NA',
+        status: 'OPEN',
+        paymentMode,
+        PaymentResponse: "Another Banger.. Woo.. Cash or nothing"
+    })
+    return res.status(201).json(transaction)
+}
 
 
 // const testRoute = async(req, res) => {
@@ -279,7 +333,7 @@ const deleteCart = async(req, res) => {
 
 
 /* ------------------- Cart Section --------------------- */
-const testRoute = async (req, res, next) => {
+const testRoute = async (req, res) => {
 
     const customer = req.user;
     
@@ -345,5 +399,8 @@ module.exports = {
     createOrder,
     getOrders,
     getOrderById,
-    testRoute
+    testRoute,
+    getAvailableDiscount,
+    verifyDiscount,
+    createPayment
 }

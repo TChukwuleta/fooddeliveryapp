@@ -2,10 +2,14 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
 const discountSchema = new schema({
-    offerType: {
+    discountType: {
         type: String,
         required: true
     },
+    theAdmin: [{
+        type: schema.Types.ObjectId,
+        ref: 'adminProfile'
+    }],
     title: {
         type: String,
         required: true
@@ -14,6 +18,10 @@ const discountSchema = new schema({
         type: String
     },
     minValue: {
+        type: Number,
+        required: true
+    },
+    discountAmount: {
         type: Number,
         required: true
     },
@@ -37,7 +45,7 @@ const discountSchema = new schema({
     bins: [{
         type: Number
     }],
-    pinCode: {
+    pincode: {
         type: String,
         required: true
     },

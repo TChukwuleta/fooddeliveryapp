@@ -20,7 +20,7 @@ const userSchema = new schema({
     },
     phone: {
         type: String,
-        required: true
+        required: true 
     },
     address: {
         type: String
@@ -43,7 +43,7 @@ const userSchema = new schema({
         }
     }],
     orders: [{
-        type: schema.Types.ObjectId,
+        type: schema.Types.ObjectId, 
         ref: 'order'
     }] 
 }, {

@@ -9,7 +9,7 @@ const profileSchema = new schema({
     dCode: {
         type: String
     },
-    email: {
+    email: { 
         type: String,
         required: true
     },

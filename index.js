@@ -1,5 +1,4 @@
 const express = require('express')
-const customerRoute = require('./routes/Customer/customerRoutes')
 const userRoute = require('./routes/User/userRoutes')
 const adminRoute = require('./routes/Admin/adminRoutes')
 const dispathRoute = require('./routes/Dipatcher/dispatchRoute')
@@ -25,7 +24,6 @@ mongoose.connect(uri, { useNewUrlParser: true })
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
  
-app.use('/customer', customerRoute)
 app.use('/admin', adminRoute)
 app.use('/rider', dispathRoute)
 app.use('/user', userRoute)

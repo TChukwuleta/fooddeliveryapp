@@ -2,6 +2,9 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
 const catalogSchema = new schema({
+    adminId: {
+        type: String
+    },
     itemNo: {
         type: Number
     },

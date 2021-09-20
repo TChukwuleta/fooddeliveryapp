@@ -10,7 +10,7 @@ router.post('/login', dispatchController.loginRider)
 
 router.get('/profile', validateAuth, dispatchController.getdispatcherProfile)
 
-router.put('/update', dispatchController.updateDispatchProfile)
+router.put('/update/:pincode', dispatchController.updateDispatchProfile)
 
 router.get('/:pincode', dispatchController.dispatchAvailability)
 

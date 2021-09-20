@@ -8,7 +8,6 @@ router.get('/', (req, res) => {
 })
 router.get('/test', validateAuth, customerController.testRoute)
 
-// The User
 
 // Sign Up
 router.post('/register', customerController.registerCustomer)
@@ -28,5 +27,12 @@ router.get('/cart', customerController.getCart)
 // router.post('/cart', validateAuth, customerController.addToCart)
 router.post('/cart', validateAuth, customerController.testRoute)
 router.delete('/cart', customerController.deleteCart)
+
+// Discount
+router.get('/discount/:pincode', customerController.getAvailableDiscount)
+router.get('/discount/verify/:id', validateAuth, customerController.verifyDiscount)
+
+// Payment
+router.post('/create-payment', validateAuth, customerController.createPayment)
 
 module.exports = router     

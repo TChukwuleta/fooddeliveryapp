@@ -1,5 +1,6 @@
 const Product = require('../../models/productCatalogModel')
 const adminProfile = require('../../models/adminProfileModel')
+const Discount = require('../../models/discountModel')
 const Order = require('../../models/orderModel')
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
@@ -89,7 +90,7 @@ const loginAdmin = async (req, res) => {
 const createProduct = async (req, res) => {
     const user = req.user
     if(user){
-        const admin = await adminProfile.findById(user._id)
+        const admin = await adminProfile.findById(user._id)  
         if(admin){
             const { error } = productSchema.validate(req.body)
             if (error){
@@ -100,6 +101,7 @@ const createProduct = async (req, res) => {
                 return res.json({ "Message": "A Product with that ID exists "})
             }
             const newProduct = await Product.create({
+                adminId: admin._id,
                 name: req.body.name,
                 description: req.body.description,
                 category: req.body.category,
@@ -107,7 +109,7 @@ const createProduct = async (req, res) => {
                 price: req.body.price,
                 itemNo: req.body.itemNo,
                 deliveryTime: new Date(),
-                rating: req.body.rating
+                rating: 0
             })
             console.log(newProduct)
             // return res.status(201).json(newProduct)
@@ -208,16 +210,92 @@ const processOrder = async (req, res) => {
 }
 
 // Discounts
-const getDiscounts = async (req, res) => {}
-
-const updateDiscount = async (req, res) => {
+const getDiscounts = async (req, res) => {
+    let currentDiscount = []
     const user = req.user
     if(user){
-        const {} = req.body
+        const discounts = await Discount.find().populate('theAdmin')
+        if(discounts){
+            discounts.map(item => {
+                if(item.theAdmin){
+                    item.theAdmin.map(admin => {
+                        if(admin._id.toString() === user._id){
+                            currentDiscount.push(item)
+                        }
+                    })
+                }
+            })
+        }
+        return res.status(200).json(currentDiscount)
     }
+    return res.status(400).json({ message: "Discount not available" })
 }
 
-const createDiscount = async (req, res) => {}
+const createDiscount = async (req, res) => {
+    const user = req.user
+    if(user){
+        console.log(user)
+        const { title, description, discountType, discountAmount, pincode,
+        promocode, promotype, startValidity, endValidity, bank, bins,
+        minValue, isActive } = req.body
+
+        const admin = await adminProfile.findById(user._id)
+        if(admin){
+            const discount = await Discount.create({
+                title,
+                description,
+                discountType,
+                discountAmount,
+                pincode,
+                promocode,
+                promotype,
+                startValidity,
+                endValidity,
+                bank,
+                bins,
+                isActive,
+                minValue, 
+                theAdmin: [admin]
+            })
+            return res.status(201).json(discount)
+        }
+    }
+    return res.status(400).json({ message: "Unable to add Discount" })
+}
+
+const editDiscount = async (req, res) => {
+    const discountId = req.params.id
+    const user = req.user
+    if (user){
+        const { title, description, discountType, discountAmount, pincode,
+            promocode, promotype, startValidity, endValidity, bank, bins,
+            minValue, isActive 
+        } = req.body
+        const currentDiscount = await Discount.findById(discountId)
+        if(currentDiscount){
+            const admin = await adminProfile.findById(user._id)
+            if(admin){   
+                currentDiscount.title = title,
+                currentDiscount.description = description,
+                currentDiscount.discountType = discountType,
+                currentDiscount.discountAmount = discountAmount,
+                currentDiscount.pincode = pincode,
+                currentDiscount.promocode = promocode,
+                currentDiscount.promotype = promotype,
+                currentDiscount.startValidity = startValidity,
+                currentDiscount.endValidity = endValidity,
+                currentDiscount.bank = bank,
+                currentDiscount.bins = bins,
+                currentDiscount.isActive = isActive,
+                currentDiscount.minValue = minValue
+
+                const result = await currentDiscount.save()
+                return res.status(201).json(result)
+            }
+        }
+    }
+    return res.status(400).json({ message: "Can't get discount" })
+}
 
 module.exports = {
     createProduct,
@@ -231,6 +309,6 @@ module.exports = {
     getOrders,
     processOrder,
     getDiscounts,
-    updateDiscount,
+    editDiscount,
     createDiscount
 }
