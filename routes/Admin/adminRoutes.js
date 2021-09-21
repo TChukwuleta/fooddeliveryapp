@@ -20,7 +20,7 @@ router.put('/product-update/:id', validateAuth, adminController.updateProduct)
 router.post('/product-delete/:id', validateAuth, adminController.deleteProduct)
 
 // Orders
-router.get('/orders', validateAuth, adminController.getOrders)
+router.get('/orders', validateAuth, adminController.getCurrentOrders)
 router.put('/order/:id/process', adminController.processOrder)
 router.get('/order/:id', adminController.getOrderDetail)
 

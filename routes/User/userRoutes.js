@@ -23,10 +23,9 @@ router.get('/orders', validateAuth, customerController.getOrders)
 router.get('/order/:id', customerController.getOrderById)
 
 // Cart
-router.get('/cart', customerController.getCart)
-// router.post('/cart', validateAuth, customerController.addToCart)
-router.post('/cart', validateAuth, customerController.testRoute)
-router.delete('/cart', customerController.deleteCart)
+router.get('/cart', validateAuth, customerController.getCart)
+router.post('/cart', validateAuth, customerController.addToCart)
+router.delete('/cart', validateAuth, customerController.deleteCart)
 
 // Discount
 router.get('/discount/:pincode', customerController.getAvailableDiscount)

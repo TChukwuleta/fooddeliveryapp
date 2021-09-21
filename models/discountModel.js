@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
-const discountSchema = new schema({
-    discountType: {
-        type: String,
-        required: true
-    },
+const discountSchema = new schema({  
     theAdmin: [{
         type: schema.Types.ObjectId,
         ref: 'adminProfile'

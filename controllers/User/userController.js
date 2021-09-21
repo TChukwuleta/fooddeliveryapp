@@ -120,7 +120,9 @@ const updateCustomerProfile = async (req, res) => {
     return res.status(400).json({ message: "Error with updating user" })
 }
   
-// Order
+
+// ORDERS
+
 const createOrder = async (req, res) => {
     const user = req.user
     if(user){
@@ -139,6 +141,7 @@ const createOrder = async (req, res) => {
         products.map(product => {
             cart.map(({ _id, unit }) => {
                 if(product._id == _id){
+                    adminId = product.adminId
                     netAmount += (product.price * unit)
                     cartItems.push({ product, unit })
                 }
@@ -147,20 +150,26 @@ const createOrder = async (req, res) => {
         // Create order with item description
         if(cartItems){
             const currentOrder = await Order.create({
+                adminId: adminId,
                 orderId: orderId,
                 items: cartItems,
                 totalAmount: netAmount,
                 orderDate: new Date(),
                 paidThtough: "POS",
                 PaymentResponse: '',
-                orderStatus: 'Waiting'
-                
+                orderStatus: 'Waiting',
+                remarks: '',
+                deliveryId: '',
+                appliedDiscount: false,
+                discountId: null,
+                readyTimeFrame: 45
             })
             if(currentOrder){
+                customer.cart = []
                 customer.orders.push(currentOrder)
                 const profileResponse = await customer.save()
                 console.log(currentOrder)
-                return res.status(200).json(profileResponse.orders)
+                return res.status(200).json(profileResponse)
             }
         }
     }
@@ -186,17 +195,8 @@ const getOrderById = async (req, res) => {
     }
 }
 
+
 // CART
-const getCart = async(req, res) => {
-    const user = req.user
-    if (user){
-        const profile = await userProfile.findById(user._id).populate('cart.product')
-        if(profile){
-            return res.status(200).json(profile.cart)
-        }
-    }
-    return res.status(400).json({ message: "Cart is empty" })
-}
 
 const addToCart = async(req, res) => {
     const user = req.user
@@ -204,14 +204,17 @@ const addToCart = async(req, res) => {
     if(user){
         const profile = await userProfile.findById(user._id).populate("cart.product")
         let cartItems = Array()
-        const { _id, unit } = req.body
-        const product = await Product.findById(_id)
+        const { id, unit } = req.body
+        const product = await Product.findById(id)
+        console.log(profile)
+        console.log(id)
+        console.log(product)
         if(product){
             if(profile){
                 cartItems = profile.cart
                 if(cartItems.length > 0){
                     // Check and update unit
-                    let existsFoodItem = cartItems.filter((item) => item.product._id.toString() === _id)
+                    let existsFoodItem = cartItems.filter((item) => item.product._id.toString() === id)
                     if(existsFoodItem.length > 0){
                         const index = cartItems.indexOf(existsFoodItem[0])
                         if(unit > 0){
@@ -220,7 +223,7 @@ const addToCart = async(req, res) => {
                         else{
                             cartItems.splice(index, 1)
                         }
-                    }
+                    } 
                     else{
                         cartItems.push({ product, unit })
                     }
@@ -235,9 +238,22 @@ const addToCart = async(req, res) => {
                     return res.status(200).json(cartResult.cart)
                 }
             }
+            return res.status(400).json({ message: "Profile not found" })
+        }
+        return res.status(400).json({ message: "Product not found" })
+    }  
+    return res.status(400).json({ message: "Unable to create cart" })
+}
+
+const getCart = async(req, res) => {
+    const user = req.user
+    if (user){
+        const profile = await userProfile.findById(user._id).populate('cart.product')
+        if(profile){
+            return res.status(200).json(profile.cart)
         }
     }
-    return res.status(400).json({ message: "Unable to create cart" })
+    return res.status(400).json({ message: "Cart is empty" })
 }
 
 const deleteCart = async(req, res) => {
@@ -252,6 +268,7 @@ const deleteCart = async(req, res) => {
     }
     return res.status(400).json({ message: "Cart is already empty" })
 }
+
 
 // Discount
 const getAvailableDiscount = async (req, res) => {
@@ -309,82 +326,9 @@ const createPayment = async (req, res) => {
 }
 
 
-// const testRoute = async(req, res) => {
-//     const user = req.user
-//     res.send(user)
-// }
-
-// const testRoute = async(req, res) => {
-//     const user = req.user
-//     if(user){
-//         console.log(user)
-//         const profile = await userProfile.findById(user._id)
-//         if(profile){
-//             // res.json(profile)
-//             let cartItems = []
-//             const { _id, unit } = req.body
-//             const product = await Product.findById(_id)
-//             if(product){
-//                 res.json(product)
-//             }
-//         }
-//     }
-// }
-
-
-/* ------------------- Cart Section --------------------- */
-const testRoute = async (req, res) => {
-
-    const customer = req.user;
-    
-    if(customer){
-
-        const profile = await userProfile.findById(customer._id);
-        let cartItems = Array();
-
-        const { _id, unit } = req.body;
-
-        const product = await Product.findById(_id);
-
-        if(product){
-
-            if(profile != null){
-                cartItems = profile.cart;
-
-                if(cartItems.length > 0){
-                    // check and update
-                    let existFoodItems = cartItems.filter((item) => item.food._id.toString() === _id);
-                    if(existFoodItems.length > 0){
-                        
-                        const index = cartItems.indexOf(existFoodItems[0]);
-                        
-                        if(unit > 0){
-                            cartItems[index] = { product, unit };
-                        }else{
-                            cartItems.splice(index, 1);
-                        }
-
-                    }else{
-                        cartItems.push({ product, unit})
-                    }
-
-                }else{
-                    // add new Item
-                    cartItems.push({ product, unit });
-                }
-
-                if(cartItems){
-                    profile.cart = cartItems
-                    const cartResult = await profile.save();
-                    return res.status(200).json(cartResult.cart);
-                }
-
-            }
-        }
-
-    }
-
-    return res.status(404).json({ msg: 'Unable to add to cart!'});
+const testRoute = async(req, res) => {
+    const user = req.user
+    res.send(user)
 }
 
 

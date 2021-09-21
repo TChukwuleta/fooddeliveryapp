@@ -168,15 +168,15 @@ const deleteProduct = (req, res) => {}
 
 
 // Orders
-const getOrders = async (req, res) => {
+const getCurrentOrders = async (req, res) => {
     const admin = req.user
     if(admin){
-        const orders = await Order.find({ adminId: user._id}).populate('items.item')
+        const orders = await Order.find({ adminId: admin._id}).populate('items.item')
         if(orders){
             return res.status(200).json(orders)
         }
     }
-    return res.json({ message: "Order not found" })
+    return res.status(400).json({ message: "Order not found" })
 }
 
 const getOrderDetail = async (req, res) => {
@@ -209,7 +209,9 @@ const processOrder = async (req, res) => {
     return res.json({ message: "Unable to process Order" })
 }
 
-// Discounts
+
+// DISCOUNTS
+
 const getDiscounts = async (req, res) => {
     let currentDiscount = []
     const user = req.user
@@ -234,7 +236,6 @@ const getDiscounts = async (req, res) => {
 const createDiscount = async (req, res) => {
     const user = req.user
     if(user){
-        console.log(user)
         const { title, description, discountType, discountAmount, pincode,
         promocode, promotype, startValidity, endValidity, bank, bins,
         minValue, isActive } = req.body
@@ -244,7 +245,6 @@ const createDiscount = async (req, res) => {
             const discount = await Discount.create({
                 title,
                 description,
-                discountType,
                 discountAmount,
                 pincode,
                 promocode,
@@ -257,6 +257,7 @@ const createDiscount = async (req, res) => {
                 minValue, 
                 theAdmin: [admin]
             })
+            console.log(discount)
             return res.status(201).json(discount)
         }
     }
@@ -306,7 +307,7 @@ module.exports = {
     registerAdmin,
     loginAdmin,
     getOrderDetail,
-    getOrders,
+    getCurrentOrders,
     processOrder,
     getDiscounts,
     editDiscount,
