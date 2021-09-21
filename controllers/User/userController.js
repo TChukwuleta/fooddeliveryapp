@@ -6,6 +6,7 @@ const userProfile = require('../../models/userProfileModel')
 const Product = require('../../models/productCatalogModel')
 const Order = require('../../models/orderModel')
 const Transaction = require('../../models/transactionModel')
+const adminProfile = require('../../models/adminProfileModel')
 
 // Validation schema for the registration      
 const registerSchema = Joi.object({
@@ -118,81 +119,6 @@ const updateCustomerProfile = async (req, res) => {
         }
     }
     return res.status(400).json({ message: "Error with updating user" })
-}
-  
-
-// ORDERS
-
-const createOrder = async (req, res) => {
-    const user = req.user
-    if(user){
-        // Create an order ID
-        const orderId = `${Math.floor(Math.random() * 89999) + 1000}`
-        const customer = await userProfile.findById(user._id)
-        // res.send(customer)
-
-        // Grab order items from request
-        const cart = req.body
-        let cartItems = []
-        let netAmount = 0.0
-
-        // Calculate order amount
-        const products = await Product.find().where('_id').in(cart.map(itemss => itemss._id)).exec()
-        products.map(product => {
-            cart.map(({ _id, unit }) => {
-                if(product._id == _id){
-                    adminId = product.adminId
-                    netAmount += (product.price * unit)
-                    cartItems.push({ product, unit })
-                }
-            })
-        })
-        // Create order with item description
-        if(cartItems){
-            const currentOrder = await Order.create({
-                adminId: adminId,
-                orderId: orderId,
-                items: cartItems,
-                totalAmount: netAmount,
-                orderDate: new Date(),
-                paidThtough: "POS",
-                PaymentResponse: '',
-                orderStatus: 'Waiting',
-                remarks: '',
-                deliveryId: '',
-                appliedDiscount: false,
-                discountId: null,
-                readyTimeFrame: 45
-            })
-            if(currentOrder){
-                customer.cart = []
-                customer.orders.push(currentOrder)
-                const profileResponse = await customer.save()
-                console.log(currentOrder)
-                return res.status(200).json(profileResponse)
-            }
-        }
-    }
-    
-    return res.status(400).json({ message: "Error with creating orders"})
-}
-
-const getOrders = async (req, res) => {
-    const user = req.user
-    if(user){
-        const profile = await userProfile.findById(user._id).populate("orders")
-        if(profile){
-            return res.status(200).json(profile.orders)
-        }
-    }
-}
-
-const getOrderById = async (req, res) => {
-    const orderId = req.params.id
-    if(orderId){
-        const order = await Order.findById(orderId).populate("items.item")
-        res.status(200).json(order)
-    }
 }
 
 
@@ -323,6 +249,120 @@ const createPayment = async (req, res) => {
         PaymentResponse: "Another Banger.. Woo.. Cash or nothing"
     })
     return res.status(201).json(transaction)
+}
+
+
+// Validate Transactions
+const validateTransaction = async (txnId) => {
+    const currentTransaction = await Transaction.findById(txnId)
+    if(currentTransaction){
+        if(currentTransaction.status.toLowerCase() !== "failed"){
+            return { status: true, currentTransaction }
+        }
+    }
+    return { status: false, currentTransaction }
+}
+
+
+
+
+
+// DELIVERY
+
+const assignOrderForDelivery = async (orderId, adminId) => {
+    const admin = await adminProfile.findById(adminId)
+    if(admin){
+        const areacode = admin.pincode
+        const adminlat = admin.lat
+        const adminlng = admin.lng
+    }
+}
+
+
+
+// ORDERS
+
+const createOrder = async (req, res) => {
+    const user = req.user
+    const { txnId, amount, items } = req.body
+    if(user){
+        const { status, currentTransaction } = await validateTransaction(txnId)
+        if(!status){
+            return res.status(400).json({ message: "Error with creating order" })
+        }
+        
+        // Create an order ID
+        const orderId = `${Math.floor(Math.random() * 89999) + 1000}`
+        const customer = await userProfile.findById(user._id)
+        // res.send(customer)
+
+        // Grab order items from request
+        // const cart = req.body
+        let cartItems = [] 
+        let netAmount = 0.0
+
+        // Calculate order amount
+        const products = await Product.find().where('_id').in(items.map(itemss => itemss._id)).exec()
+        products.map(product => {
+            items.map(({ _id, unit }) => {
+                if(product._id == _id){
+                    adminId = product.adminId
+                    netAmount += (product.price * unit)
+                    cartItems.push({ product, unit })
+                }
+            })
+        })
+        // Create order with item description
+        if(cartItems){
+            const currentOrder = await Order.create({
+                adminId: adminId,
+                orderId: orderId,
+                items: cartItems,
+                totalAmount: netAmount,
+                paidAmount: amount,
+                orderDate: new Date(),
+                orderStatus: 'Waiting',
+                remarks: '',
+                deliveryId: '',
+                readyTimeFrame: 45
+            })
+            if(currentOrder){
+                customer.cart = []
+                customer.orders.push(currentOrder)
+
+                currentTransaction.adminId = adminId
+                currentTransaction.orderId = orderId
+                currentTransaction.status = "Confirmed"
+
+                await currentTransaction.save()
+                assignOrderForDelivery(currentOrder._id, adminId)
+
+                const profileResponse = await customer.save()
+                console.log(currentOrder)
+                return res.status(200).json(profileResponse)
+            }
+        }
+    }
+    
+    return res.status(400).json({ message: "Error with creating orders"})
+}
+
+const getOrders = async (req, res) => {
+    const user = req.user
+    if(user){
+        const profile = await userProfile.findById(user._id).populate("orders")
+        if(profile){
+            return res.status(200).json(profile.orders)
+        }
+    }
+}
+
+const getOrderById = async (req, res) => {
+    const orderId = req.params.id
+    if(orderId){
+        const order = await Order.findById(orderId).populate("items.item")
+        res.status(200).json(order)
+    }
 }
 
 

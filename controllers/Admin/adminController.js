@@ -1,6 +1,7 @@
 const Product = require('../../models/productCatalogModel')
 const adminProfile = require('../../models/adminProfileModel')
 const Discount = require('../../models/discountModel')
+const Transaction = require('../../models/transactionModel')
 const Order = require('../../models/orderModel')
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
@@ -55,11 +56,14 @@ const registerAdmin = async (req, res) => {
         email: req.body.email,
         password: hashPassword,
         phone: req.body.phone,
+        pincode: req.body.pincode,
         couriersId: [],
-        products: []
+        products: [],
+        lat: 0,
+        lng: 0
     })
 
-    return res.status(201).json(newAdmin) 
+    return res.status(201).json({ message: "Admin Account created successfully" }) 
 }
 
 // Login into admin accouunt
@@ -236,8 +240,8 @@ const getDiscounts = async (req, res) => {
 const createDiscount = async (req, res) => {
     const user = req.user
     if(user){
-        const { title, description, discountType, discountAmount, pincode,
-        promocode, promotype, startValidity, endValidity, bank, bins,
+        const { title, description, discountAmount, pincode,
+        promocode, startValidity, endValidity, bank, bins,
         minValue, isActive } = req.body
 
         const admin = await adminProfile.findById(user._id)
@@ -248,7 +252,6 @@ const createDiscount = async (req, res) => {
                 discountAmount,
                 pincode,
                 promocode,
-                promotype,
                 startValidity,
                 endValidity,
                 bank,
@@ -282,7 +285,6 @@ const editDiscount = async (req, res) => {
                 currentDiscount.discountAmount = discountAmount,
                 currentDiscount.pincode = pincode,
                 currentDiscount.promocode = promocode,
-                currentDiscount.promotype = promotype,
                 currentDiscount.startValidity = startValidity,
                 currentDiscount.endValidity = endValidity,
                 currentDiscount.bank = bank,
@@ -298,6 +300,25 @@ const editDiscount = async (req, res) => {
     return res.status(400).json({ message: "Can't get discount" })
 }
 
+const getTransaction = async (req, res) => {
+    const transactions = await Transaction.find()
+    if(transactions){
+        return res.status(200).json(transactions)
+    }
+    return res.status(400).json({ message: "Transactions not available" })
+}
+
+const getTransactionById = async (req, res) => {
+    const id = req.params.id
+    const transaction = await Transaction.findById(id)
+    if(transaction){
+        return res.status(200).json(transaction)
+    }
+    return res.status(400).json({ message: "Transaction receipt not found" })
+}
+
+
+
 module.exports = {
     createProduct,
     getProduct,
@@ -311,5 +332,7 @@ module.exports = {
     processOrder,
     getDiscounts,
     editDiscount,
-    createDiscount
+    createDiscount,
+    getTransaction,
+    getTransactionById
 }

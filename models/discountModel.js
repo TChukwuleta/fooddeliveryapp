@@ -31,10 +31,6 @@ const discountSchema = new schema({
         type: String,
         required: true
     },
-    promotype: {
-        type: String,
-        required: true
-    },
     bank: [{
         type: String
     }],

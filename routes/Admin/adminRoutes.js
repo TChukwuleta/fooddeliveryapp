@@ -29,4 +29,8 @@ router.get('/discounts', validateAuth, adminController.getDiscounts)
 router.post('/discount', validateAuth, adminController.createDiscount)
 router.put('/discount/:id', validateAuth, adminController.editDiscount)
 
+// Transactions
+router.get('/transactions', adminController.getTransaction)
+router.get('/transaction/:id', adminController.getTransactionById)
+
 module.exports = router  

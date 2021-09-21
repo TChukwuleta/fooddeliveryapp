@@ -11,8 +11,17 @@ const profileSchema = new schema({
     password: { 
         type: String
     },
+    pincode: {
+        type: String
+    },
     phone: {
         type: String
+    },
+    lat: {
+        type: Number
+    },
+    lng: {
+        type: Number
     },
     couriersId: [{
         type: schema.Types.ObjectId,

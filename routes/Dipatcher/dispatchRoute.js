@@ -10,9 +10,11 @@ router.post('/login', dispatchController.loginRider)
 
 router.get('/profile', validateAuth, dispatchController.getdispatcherProfile)
 
-router.put('/update/:pincode', dispatchController.updateDispatchProfile)
+router.put('/update/:dCode', dispatchController.updateDispatchProfile)
 
 router.get('/:pincode', dispatchController.dispatchAvailability)
+
+router.put('/change-status', validateAuth, dispatchController.updateServiceAvalilability)
 
 
 module.exports = router

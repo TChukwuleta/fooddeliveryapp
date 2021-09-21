@@ -24,14 +24,11 @@ const orderSchema = new schema({
         type: Number,
         required: true
     },
+    paidAmount: {
+        type: Number
+    },
     orderDate: {
         type: Date
-    }, 
-    paidThrough: {
-        type: String
-    },
-    PaymentResponse: {
-        type: String 
     },
     orderStatus: { 
         type: String
@@ -40,12 +37,6 @@ const orderSchema = new schema({
         type: String
     },
     deliveryId: {
-        type: String
-    },
-    appliedDiscount: {
-        type: Boolean
-    },
-    discountId: {
         type: String
     },
     readyTimeFrame: {

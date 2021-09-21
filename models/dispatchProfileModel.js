@@ -2,12 +2,20 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
 const profileSchema = new schema({
-    name: {
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
         type: String,
         required: true
     },
     dCode: {
         type: String
+    },
+    address: {
+        type: String,
+        required: true
     },
     email: { 
         type: String,
@@ -18,11 +26,18 @@ const profileSchema = new schema({
         required: true
     },
     phone: {
-        type: Number
+        type: Number,
+        required: true
     },
     serviceAvailable: { 
         type: Boolean,
         default: false
+    },
+    lat: {
+        type: Number
+    },
+    lng: {
+        type: Number
     },
     wantsToRide: {
         type: Boolean,
