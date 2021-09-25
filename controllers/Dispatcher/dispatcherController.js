@@ -156,6 +156,20 @@ const updateServiceAvalilability = async (req, res) => {
     return res.status(200).json({ message: "Error with updating availability status" })
 }
 
+const requestResponse = async (req, res) => {
+    const user = req.user
+    console.log(user)
+    if(user){
+        const existingRider = await dispatchProfile.findById(user._id)
+        if(existingRider){
+            existingRider.wantsToRide = !existingRider.wantsToRide
+            const savedResult = await existingRider.save()
+            return res.json(savedResult)
+        }
+    }
+    return res.status(200).json({ message: "Error with updating availability status" })
+}
+
 
 
 module.exports = {
@@ -164,5 +178,6 @@ module.exports = {
     dispatchAvailability,
     getdispatcherProfile,
     updateDispatchProfile,
-    updateServiceAvalilability
+    updateServiceAvalilability,
+    requestResponse
 }

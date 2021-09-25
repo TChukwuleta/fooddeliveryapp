@@ -6,6 +6,7 @@ const Order = require('../../models/orderModel')
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const dispatchProfile = require('../../models/dispatchProfileModel')
 
 // Product Validation schema
 const productSchema = Joi.object({
@@ -316,6 +317,27 @@ const getTransactionById = async (req, res) => {
     }
     return res.status(400).json({ message: "Transaction receipt not found" })
 }
+
+// const verifyRider = async (req, res) => {
+//     const { _id, status } = req.body
+//     if(_id){
+//         const profile = await dispatchProfile.findById(_id)
+//         if(profile){
+//             profile.verified = status
+//             const result = await profile.save()
+//             return res.status(200).json(result)
+//         }
+//     }
+//     return res.status(400).json({ message: "Rider not found" })
+// }
+
+// const GetRiders = async (req, res) => {
+//         const riders = await dispatchProfile.find()
+//         if(riders){
+//             return res.status(200).json(riders)
+//         }
+//     return res.status(400).json({ message: "Riders not found" })
+// }
 
 
 

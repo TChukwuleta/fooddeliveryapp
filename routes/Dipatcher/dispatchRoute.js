@@ -1,6 +1,7 @@
 const express = require('express')
 const { validateAuth } = require('../../middlewares/auth')
 const dispatchController = require('../../controllers/Dispatcher/dispatcherController')
+const { validate } = require('../../models/discountModel')
 const router = express.Router()
 
 // PROFILES
@@ -16,5 +17,6 @@ router.get('/:pincode', dispatchController.dispatchAvailability)
 
 router.put('/change-status', validateAuth, dispatchController.updateServiceAvalilability)
 
+router.put('/order-response', validateAuth, dispatchController.requestResponse)
 
 module.exports = router

@@ -7,6 +7,7 @@ const Product = require('../../models/productCatalogModel')
 const Order = require('../../models/orderModel')
 const Transaction = require('../../models/transactionModel')
 const adminProfile = require('../../models/adminProfileModel')
+const dispatchProfile = require('../../models/dispatchProfileModel')
 
 // Validation schema for the registration      
 const registerSchema = Joi.object({
@@ -275,6 +276,21 @@ const assignOrderForDelivery = async (orderId, adminId) => {
         const areacode = admin.pincode
         const adminlat = admin.lat
         const adminlng = admin.lng
+
+        const rider = await dispatchProfile.find({ dCode: areacode, serviceAvailable: true })
+        if(rider){
+            // Check the nearest rider
+            console.log(`Delivery Person ${rider[0]}`)
+            const currentOrder = await Order.findById(orderId)
+            if(currentOrder){
+                // Update deliveryId
+                currentOrder.deliveryId = order[0]._id
+                const response = await currentOrder.save()
+                console.log(response)
+
+                // Notification using firebase notification
+            }
+        }
     }
 }
 
