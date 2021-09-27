@@ -22,6 +22,9 @@ const catalogSchema = new schema({
     deliveryTime: {
         type: Date
     },
+    image: {
+        type: String
+    },
     items: {
         type: Number
     },

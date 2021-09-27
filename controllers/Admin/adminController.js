@@ -16,6 +16,7 @@ const productSchema = Joi.object({
     category: Joi.string().required(),
     items: Joi.number().required(),
     price: Joi.number().required()
+    // images: Joi.string()
 })
 
 // Register Validation schema
@@ -63,7 +64,7 @@ const registerAdmin = async (req, res) => {
         lat: 0,
         lng: 0
     })
-
+ 
     return res.status(201).json({ message: "Admin Account created successfully" }) 
 }
 
@@ -87,7 +88,7 @@ const loginAdmin = async (req, res) => {
     })
     return res.status(201).json({ signature: signature }) 
 }
-
+ 
 
 
 // CONTENT MANAGEMENT 
@@ -105,22 +106,29 @@ const createProduct = async (req, res) => {
             if(existingProduct){
                 return res.json({ "Message": "A Product with that ID exists "})
             }
+
+            // const files = req.file
+            // console.log(files)
+            // const images = files.map((file) => file.filename)
+
             const newProduct = await Product.create({
                 adminId: admin._id,
                 name: req.body.name,
-                description: req.body.description,
+                description: req.body.description, 
                 category: req.body.category,
-                items: req.body.items,
+                items: req.body.items, 
                 price: req.body.price,
-                itemNo: req.body.itemNo,
+                itemNo: req.body.itemNo, 
+                image: req.file.path,
                 deliveryTime: new Date(),
-                rating: 0
+                rating: 0 
             })
             console.log(newProduct)
+            
             // return res.status(201).json(newProduct)
             admin.products.push(newProduct)
             const result = admin.save() 
-            return res.json(result)
+            return res.json({nessage: "Product added successfully"})
         }
         return res.status(400).json({ message: "Only Admins can create product"})
     }
