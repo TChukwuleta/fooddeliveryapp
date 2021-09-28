@@ -6,21 +6,21 @@ const app = express()
 const mongoose = require('mongoose')
 const path = require('path')
 
-// mongoose.connect(`${process.env.MONGO_URL}`, { useNewUrlParser: true })
-// .then(() => {
-//     console.log('Leggo')
-// })
-// .catch((e) => { 
-//     console.log(e)
-// })
-const uri = 'mongodb://localhost/fooddeliverytest'
-mongoose.connect(uri, { useNewUrlParser: true })
+mongoose.connect(`${process.env.MONGO_URL}`, { useNewUrlParser: true })
 .then(() => {
     console.log('Leggo')
 })
-.catch((e) => {
+.catch((e) => { 
     console.log(e)
-}) 
+})
+// const uri = 'mongodb://localhost/fooddeliverytest'
+// mongoose.connect(uri, { useNewUrlParser: true })
+// .then(() => {
+//     console.log('Leggo')
+// })
+// .catch((e) => {
+//     console.log(e)
+// }) 
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
