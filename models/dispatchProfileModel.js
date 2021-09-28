@@ -33,6 +33,10 @@ const profileSchema = new schema({
         type: Boolean,
         default: false
     },
+    startAndEnd: {
+        type: Boolean,
+        default: false
+    },
     lat: {
         type: Number
     },

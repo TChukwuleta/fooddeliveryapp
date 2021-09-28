@@ -107,7 +107,7 @@ const createProduct = async (req, res) => {
                 return res.json({ "Message": "A Product with that ID exists "})
             }
 
-            // const files = req.file
+            // const files = req.file 
             // console.log(files)
             // const images = files.map((file) => file.filename)
 
@@ -177,7 +177,22 @@ const updateProduct = async (req, res) => {
     }
 }
 
-const deleteProduct = (req, res) => {}
+const deleteProduct = async (req, res) => {
+    const productId = req.params.id
+    const user = req.user
+    if(user){
+        const admin = await adminProfile.findById(user._id)
+        if(admin){
+            Product.deleteOne({ itemNo: productId })
+            .then(() => {
+                return res.status(201).json({ message: "Product deleted successfully" })
+            })
+            .catch((e) => {
+                res.status(400).send(e)
+            })
+        }
+    }
+}
 
 
 // Orders
@@ -188,7 +203,7 @@ const getCurrentOrders = async (req, res) => {
         if(orders){
             return res.status(200).json(orders)
         }
-    }
+    }   
     return res.status(400).json({ message: "Order not found" })
 }
 
@@ -244,6 +259,15 @@ const getDiscounts = async (req, res) => {
         return res.status(200).json(currentDiscount)
     }
     return res.status(400).json({ message: "Discount not available" })
+}
+
+const getSingleDiscount = async (req, res) => {
+    const pinCode = req.params.pincode
+    const discount = await Discount.find({ pincode: pinCode })
+    if(discount){
+        return res.status(200).json(discount)
+    }
+    return res.status(400).json({ message: "Discount not found" })
 }
 
 const createDiscount = async (req, res) => {

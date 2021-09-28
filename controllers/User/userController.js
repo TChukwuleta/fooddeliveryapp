@@ -133,9 +133,9 @@ const addToCart = async(req, res) => {
         let cartItems = Array()
         const { id, unit } = req.body
         const product = await Product.findById(id)
-        console.log(profile)
-        console.log(id)
-        console.log(product)
+        // console.log(profile)
+        // console.log(id)
+        // console.log(product)
         if(product){
             if(profile){
                 cartItems = profile.cart
@@ -237,6 +237,30 @@ const createPayment = async (req, res) => {
         }
     }
     // Perform payment gateway charge API call
+    router.post('/transfer', (req, res, next) => {
+        const reference = "trans-"+ Date.now()
+        const seckey = `${process.env.Secret_Key}`
+        const account_bank = req.body.bankcode
+        const account_number = req.body.accountno
+        const amount = req.body.amount
+    
+        // console.log(reference)
+        var options = {
+            method: 'POST',
+            url: 'https://ravesandboxapi.flutterwave.com/v2/gpx/transfers/create',
+            form: { account_bank:account_bank, account_number:account_number, amount:amount, seckey:seckey, reference:reference },
+            headers: { 'content-type': 'application/json' }
+        }
+        request(options, (error, response, body) => {
+            if(error){
+                return res.status(400).json(error)
+            }
+    
+            const resp = JSON.parse(body)
+            console.log(resp)
+            return res.status(200).json(resp)
+        })
+    }) 
     
     // Create record on transaction
     const transaction = await Transaction.create({
@@ -313,7 +337,7 @@ const createOrder = async (req, res) => {
         // res.send(customer)
 
         // Grab order items from request
-        // const cart = req.body
+        // const cart = req.body 
         let cartItems = [] 
         let netAmount = 0.0
 
@@ -328,7 +352,7 @@ const createOrder = async (req, res) => {
                 }
             })
         })
-        // Create order with item description
+        // Create order with item description 
         if(cartItems){
             const currentOrder = await Order.create({
                 adminId: adminId,
@@ -371,6 +395,7 @@ const getOrders = async (req, res) => {
             return res.status(200).json(profile.orders)
         }
     }
+    return res.status(400).json({ message: "No Order available" })
 }
 
 const getOrderById = async (req, res) => {

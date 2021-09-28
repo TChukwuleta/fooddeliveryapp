@@ -128,14 +128,29 @@ const dispatchAvailability = async (req, res) => {
     const result = await dispatchProfile.find({ dCode: pinCode })
  
     if(result){ 
-        dispatchProfile.serviceAvailable = true
+        dispatchProfile.serviceAvailable = !dispatchProfile.serviceAvailable
         const toggler =  dispatchProfile.save()
         return res.status(200).json(toggler) 
     } 
     else{
         res.status(400).json({ "message": "Rider not found" })
     }
-}
+}  
+
+// Start and end ride
+const startAndEndRide = async (req, res) => {
+    const user = req.user
+    console.log(user) 
+    if(user){
+        const existingRider = await dispatchProfile.findById(user._id)
+        if(existingRider){
+            existingRider.startAndEnd = !existingRider.startAndEnd
+            const savedResult = await existingRider.save()
+            return res.json(savedResult)
+        }
+    }
+    return res.status(200).json({ message: "Error with updating availability status" })
+} 
 
 const updateServiceAvalilability = async (req, res) => {
     const user = req.user

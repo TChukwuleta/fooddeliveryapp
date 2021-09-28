@@ -27,7 +27,7 @@ const orderSchema = new schema({
     paidAmount: {
         type: Number
     },
-    orderDate: {
+    orderDate: { 
         type: Date
     },
     orderStatus: { 

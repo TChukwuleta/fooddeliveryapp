@@ -49,7 +49,7 @@ router.get('/transactions', adminController.getTransaction)
 router.get('/transaction/:id', adminController.getTransactionById)
 
 // T
-router.use(validateAuth)
-router.post('/product-create', uploadImage, adminController.createProduct)
+// router.use(validateAuth)
+// router.post('/product-create', uploadImage, adminController.createProduct)
 
 module.exports = router  
