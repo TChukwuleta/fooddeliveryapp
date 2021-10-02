@@ -308,7 +308,7 @@ const assignOrderForDelivery = async (orderId, adminId) => {
             const currentOrder = await Order.findById(orderId)
             if(currentOrder){
                 // Update deliveryId
-                currentOrder.deliveryId = order[0]._id
+                currentOrder.deliveryId = rider[0]._id
                 const response = await currentOrder.save()
                 console.log(response)
 
